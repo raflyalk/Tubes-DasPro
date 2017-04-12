@@ -89,30 +89,28 @@ type                            //setelah dipikir", semua file eksternal berarti
 var
      //data yg dipake dalem    |    data array yg isinya       | jumlah efektif array yg isinya
      //program utama ini       |    data" dari file eksternal  | data dari file eksternal tadi
-     tgl        : tanggal;
-     nas        : nasabah;         anas       : anasabah;         neffanas     : integer;
-     rek        : rekening ;       arek       : arekening;        neffarek     : integer;
-     transa     : transaksi;       atransa    : atransaksi;       neffatransa  : integer;
-     transf     : transfer;        atransf    : atransfer;        neffatransf  : integer;
-     pemba      : pembayaran;      apemba     : apembayaran;      neffapemba   : integer;
-     pembe      : pembelian;       apembe     : apembelian;       neffapembe   : integer;
-     ntukar     : nilaitukar;      antukar    : anilaitukar;      neffantukar  : integer;
-     datab      : databarang;      adatab     : adatabarang;      neffadatab   : integer;
+      tgl        : tanggal;
+      nas        : nasabah;         anas       : anasabah;         neffanas     : integer;
+      rek        : rekening ;       arek       : arekening;        neffarek     : integer;
+      transa     : transaksi;       atransa    : atransaksi;       neffatransa  : integer;
+      transf     : transfer;        atransf    : atransfer;        neffatransf  : integer;
+      pemba      : pembayaran;      apemba     : apembayaran;      neffapemba   : integer;
+      pembe      : pembelian;       apembe     : apembelian;       neffapembe   : integer;
+      ntukar     : nilaitukar;      antukar    : anilaitukar;      neffantukar  : integer;
+      datab      : databarang;      adatab     : adatabarang;      neffadatab   : integer;
+      //Varibel setiap file eksternal yang dipakai
+      fnas       : file of nasabah;
+      frek       : file of rekening;
+      ftransa    : file of transaksi;
+      ftransf    : file of transfer;
+      fpemba     : file of pembayaran;
+      fpembe     : file of pembelian;
+      fntukar    : file of nilaitukar;
+      fdatab     : file of databarang;
 
-     //Varibel setiap file eksternal yang dipakai
-     fnas       : file of nasabah;      //ternyata bisa lho file of TipeBentukan !
-     frek       : file of rekening;
-     ftransa    : file of transaksi;
-     ftransf    : file of transfer;
-     fpemba     : file of pembayaran;
-     fpembe     : file of pembelian;
-     fntukar    : file of nilaitukar;
-     fdatab     : file of databarang;
-
-     i : integer; stop : boolean;
-	 temp1 : string; temp2 : string; coba:integer;
-	 
-     menu : string; x:integer;
+      i : integer; stop : boolean;
+      temp1 : string; temp2 : string; coba:integer;
+      menu : string; x:integer;
 procedure login(neffanas : integer;var anas:anasabah; var nas:nasabah;var coba:integer);
 begin
 		write('> username: '); readln(temp1);
@@ -120,11 +118,11 @@ begin
 		stop:=false; i:=1;
 		while((i<=neffanas)and(not(stop))) do
 		begin
-			if((anas[i].id=temp1)and(anas[i].pass=temp2)) then
+		  if((anas[i].id=temp1)and(anas[i].pass=temp2)) then
 			begin
-				if(anas[i].status='aktif') then
-				begin
-					nas.nonas:=anas[i].nonas;
+        if(anas[i].status='aktif') then
+        begin
+				  nas.nonas:=anas[i].nonas;
 					nas.nama:=anas[i].nama;
 					nas.alamat:=anas[i].alamat;
 					nas.kota:=anas[i].kota;
@@ -161,30 +159,34 @@ begin
 			end;				
 		end;			
 end;
-{Algoritma}
+
+procedure F9transfer(rekPengirim, rekPenerima : rekening; saldo:integer);
 begin
-     assign(fnas,'Data Nasabah.dat');
+    
+end;
+
+{ALGORITMA}
+begin
+    assign(fnas,'Data Nasabah.dat');
 ///////////////////////////////////////// KALO  PERTAMA KALINYA COBA PROGRAM INI, BAGIAN { ..... } di bawah jgn dihapus dulu, soalnya gabisa "reset" file kalo filenya belom ada di komputer kalian
 //////// Jadi, kalo seudah pertama minimal skali ngeisi data nasabah di komputer kalian sampe selesai, baru tanda { .... } nya dihapus
-
-
-     reset(fnas);                   //Baca file Data Nasabah buat dimasukkin ke array di program utama kita
-     neffanas:=0;                    //Nanti harusnya bagian load ini dibuat prosedurnya sendiri, nanti ya tapi
-     while(not(EOF(fnas))) do
-     begin
+    reset(fnas);                   //Baca file Data Nasabah buat dimasukkin ke array di program utama kita
+    neffanas:=0;                    //Nanti harusnya bagian load ini dibuat prosedurnya sendiri, nanti ya tapi
+    while(not(EOF(fnas))) do
+    begin
           neffanas:=neffanas+1;
           read(fnas,anas[neffanas]);        //ternyata kalo tipe datanya sama, cara read nya tinggal kaya gitu bisa lho !
-     end;
-	 rewrite(fnas);
-     write('Tanggal Hari ini (d m y) : '); readln(tgl.d,tgl.m,tgl.y); writeln('Tanggal hari ini yaitu ',tgl.d,'-',tgl.m,'-',tgl.y);
-     writeln('Pilih Menu :'); writeln('1 = Buat data nasabah baru, sekaligus dipakai langsung datanya');
-	 writeln('2 = Login');writeln('ketik "exit" untuk keluar');
-     write('> ');readln(menu);
-	 coba:=3;
-	 while((menu<>'exit')and(coba>0)) do			//Selama pengguna belum mengetik 'Exit', maka program akan terus berjalan
-	begin
-		if(menu='1') then x:=1 else if(menu='2') then x:=2;  //bentuk Case-Of hanya bisa Integer, jadi ubah dlu data menu ke variabel integer;
-		case x of
+    end;
+    rewrite(fnas);
+    write('Tanggal Hari ini (d m y) : '); readln(tgl.d,tgl.m,tgl.y); writeln('Tanggal hari ini yaitu ',tgl.d,'-',tgl.m,'-',tgl.y);
+    writeln('Pilih Menu :'); writeln('1 = Buat data nasabah baru, sekaligus dipakai langsung datanya');
+    writeln('2 = Login');writeln('ketik "exit" untuk keluar');
+    write('> ');readln(menu);
+    coba:=3;
+    while((menu<>'exit')and(coba>0)) do			//Selama pengguna belum mengetik 'Exit', maka program akan terus berjalan
+    begin
+  		if(menu='1') then x:=1 else if(menu='2') then x:=2;  //bentuk Case-Of hanya bisa Integer, jadi ubah dlu data menu ke variabel integer;
+  		case x of
 			1 : begin
 						// rewrite(fnas);
 						write('Nomor Nasabah : ');readln(nas.nonas);
@@ -207,24 +209,22 @@ begin
 						end;
 					end;
 			2 : begin
-                        coba:=coba-1;
+            coba:=coba-1;
 						login(neffanas,anas,nas,coba);
-			
 					end;
 		end;
 	
 		
-	    if(coba>0) then
+    if(coba>0) then
 		begin
 			write('> '); readln(menu);
 		end;
 	end;
-    // anas[neffanas]:=nas;
+  // anas[neffanas]:=nas;
 	    for i:=1 to neffanas do
 	    begin
 	         write(fnas,anas[i]);
         end;
-
 	
 end.
 
